@@ -1,0 +1,6 @@
+# Specific files with server-side code
+src/pages/Public/HelloWorld.js
+src/components/ecosystems/CustomerSubscription.js
+
+# General patterns (as a backup)
+src/**/*eserver*
