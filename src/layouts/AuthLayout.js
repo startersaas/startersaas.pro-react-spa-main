@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Grid,
   CssBaseline,
   ThemeProvider,
   Box,
   useMediaQuery,
-  IconButton,
   GlobalStyles,
 } from '@mui/material';
 import getTheme from 'themes/Theme';
@@ -13,24 +12,34 @@ import MobileDrawer from 'components/organisms/MobileDrawer';
 import { SnackBar } from 'components/elements/SnackBar';
 import Footer from 'components/organisms/Footer';
 import { useDarkMode } from 'contexts/DarkMode';
-import { useTvMode } from 'contexts/TvMode';
+import { useRetroTvMode } from 'contexts/RetroTvMode';
 import { useDrawer } from 'contexts/DrawerContext';
 import { useLocation } from 'react-router-dom';
-import RocketIcon from '@mui/icons-material/Rocket';
 import getNewTheme from 'themes/NewTheme';
 import TopIcons from 'components/organisms/TopIcons';
 import { AppBarProvider } from 'contexts/AppBarContext';
 import BottomNavigation from 'components/ecosystems/BottomNavigation';
 import AdaptiveLayout from 'components/elements/AdaptiveLayout';
+import { useAuth } from 'contexts/AuthContext';
+import ThemeToggleButtons from 'components/electrons/ThemeToggleButtons';
+import DrawerComponent from 'components/organisms/DrawerComponent';
 
 const AuthLayout = ({ children }) => {
   const { darkMode } = useDarkMode();
-  const { tvMode } = useTvMode();
+  const { useTheme, setUseTheme, usePanel, setUsePanel } = useRetroTvMode();
   const { drawerOpen, toggleDrawer } = useDrawer();
   const isXs = useMediaQuery('(max-width:600px)');
   const location = useLocation();
   const isHomePage = location.pathname === '/';
-  const [useTheme, setUseTheme] = useState(false);
+  
+  // Get user from auth context with empty object fallback for safety
+  const { user = {} } = useAuth();
+  
+  // Check if user is admin (includes superadmin)
+  const isAdmin = user?.role === 'admin' || user?.role === 'superadmin' || user?.isAdmin === true;
+  
+  // Determine if we're on an auth path
+  const isAuthPath = location.pathname.startsWith('/auth');
 
   const theme = useTheme
     ? isHomePage
@@ -39,6 +48,10 @@ const AuthLayout = ({ children }) => {
     : isHomePage
     ? getTheme(darkMode)
     : getTheme(darkMode, isXs);
+
+  // Toggle handlers
+  const toggleThemeMode = () => setUseTheme(prev => !prev);
+  const togglePanelMode = () => setUsePanel(prev => !prev);
 
   return (
     <AppBarProvider>
@@ -55,18 +68,23 @@ const AuthLayout = ({ children }) => {
             }}
           />
 
-          <IconButton
-            onClick={() => setUseTheme(!useTheme)}
-            sx={{
-              position: 'fixed',
-              bottom: 20,
-              left: 20,
-              color: useTheme ? '#61dafb' : 'inherit',
-              zIndex: 1501,
-            }}
-          >
-            <RocketIcon sx={{ fontSize: '3rem' }} />
-          </IconButton>
+          {/* Added DrawerComponent with requested props */}
+          <DrawerComponent 
+            successCode="0000"
+            buttonBackgroundColor="rgba(97, 218, 251, .2)"
+            buttonHoverColor="rgba(97, 218, 251, .6)"
+            buttonActiveColor="rgba(97, 218, 251, .6)"
+            enableVibration={true}
+            darkMode={darkMode}
+          />
+
+          <ThemeToggleButtons
+            toggleThemeMode={toggleThemeMode}
+            useTheme={useTheme}
+            togglePanelMode={togglePanelMode}
+            usePanel={usePanel}
+            fontSize="3rem"
+          />
 
           <Grid container columns={12} sx={{ width: '100%', margin: 0, padding: 0 }}>
             <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
@@ -88,8 +106,14 @@ const AuthLayout = ({ children }) => {
             </Grid>
 
             <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-              <MobileDrawer anchor="left" open={drawerOpen} toggleDrawer={toggleDrawer} />
-              <BottomNavigation visible={useTheme} backgroundColor="#2196f3" opacity={0.85} fontSize="0.8rem" />
+              <MobileDrawer 
+                anchor="left" 
+                open={drawerOpen} 
+                toggleDrawer={toggleDrawer} 
+                isAdmin={isAdmin}
+                isAuthPath={isAuthPath}
+              />
+              <BottomNavigation visible={useTheme && usePanel} backgroundColor="#2196f3" opacity={0.85} fontSize="0.8rem" />
             </Grid>
 
             <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>

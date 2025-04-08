@@ -10,7 +10,8 @@ import {
   TableBody,
   TableCell,
   TableRow,
-  Button
+  Button,
+  Skeleton
 } from '@mui/material';
 import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 import PaymentsIcon from '@mui/icons-material/Payments';
@@ -27,17 +28,10 @@ import AutorenewIcon from '@mui/icons-material/Autorenew';
  * @param {Object} props.subscription - Current subscription object
  * @param {Function} props.onCancelSubscription - Function to handle subscription cancellation
  * @param {Function} props.formatMoney - Utility function to format currency
- * 
-          <SubscriptionInfo 
-            plan={selectedPlan}
-            subscription={currentSubscription}
-            onCancelSubscription={handleCancelSubscription}
-            formatMoney={formatMoney}
-          />
  */
 const SubscriptionInfo = ({
-  plan,
-  subscription,
+  plan = {}, // Default to empty object to prevent undefined errors
+  subscription = {}, // Default to empty object
   onCancelSubscription,
   formatMoney
 }) => {
@@ -45,6 +39,7 @@ const SubscriptionInfo = ({
 
   // Helper function to format Unix timestamp to date
   const formatDate = (unixTimestamp) => {
+    if (!unixTimestamp) return 'N/A';
     return moment.unix(unixTimestamp).format("DD/MM/YYYY");
   };
 
@@ -91,7 +86,9 @@ const SubscriptionInfo = ({
                 </Grid>
               </Grid>
               <Grid item>
-                <Typography fontWeight="medium">{plan.title}</Typography>
+                <Typography fontWeight="medium">
+                  {plan?.title || t("dashboardPage.noPlanSelected")}
+                </Typography>
               </Grid>
             </Grid>
 
@@ -111,14 +108,18 @@ const SubscriptionInfo = ({
                 </Grid>
               </Grid>
               <Grid item>
-                <Typography fontWeight="medium">
-                  {formatMoney("it", plan.currency, plan.price)}
-                </Typography>
+                {plan?.price !== undefined && plan?.currency ? (
+                  <Typography fontWeight="medium">
+                    {formatMoney("it", plan.currency, plan.price)}
+                  </Typography>
+                ) : (
+                  <Typography color="text.secondary">—</Typography>
+                )}
               </Grid>
             </Grid>
 
             {/* Subscription Status */}
-            {subscription.canceled_at ? (
+            {subscription?.canceled_at ? (
               <>
                 <Grid item container justifyContent="space-between" alignItems="center">
                   <Grid item>
@@ -178,7 +179,7 @@ const SubscriptionInfo = ({
                 </Grid>
                 <Grid item>
                   <Typography>
-                    {formatDate(subscription.current_period_end)}
+                    {formatDate(subscription?.current_period_end)}
                   </Typography>
                 </Grid>
               </Grid>
@@ -196,13 +197,14 @@ const SubscriptionInfo = ({
                   {t("dashboardPage.changePlan")}
                 </Button>
               </Grid>
-              {!subscription.canceled_at && (
+              {subscription && !subscription.canceled_at && (
                 <Grid item xs={6}>
                   <Button 
                     onClick={() => onCancelSubscription(subscription.id)} 
                     fullWidth
                     variant="outlined"
                     color="error"
+                    disabled={!subscription.id}
                   >
                     {t("dashboardPage.deleteSubscription")}
                   </Button>

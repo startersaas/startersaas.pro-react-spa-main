@@ -4,6 +4,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useRoles } from 'contexts/RolesContext';
 import { usePlanType } from 'contexts/PlanTypeContext';
 import { useAuth } from 'contexts/AuthContext';
+import { getSuperToken } from 'libs/utils';
 
 // Add a loading component or use an existing one from your project
 const LoadingComponent = () => (
@@ -24,6 +25,18 @@ export const PrivateRoute = ({ element: Component, ...rest }) => {
   }
 
   if (!isAuthenticated) {
+    return (
+      <Navigate
+        to="/auth/login"
+        state={{ from: location.pathname }}
+        replace
+      />
+    );
+  }
+
+  // Check if route requires superadmin and if super token exists
+  const requiresSuperAdmin = allowedRoles.length === 1 && allowedRoles.includes('superadmin');
+  if (requiresSuperAdmin && !getSuperToken()) {
     return (
       <Navigate
         to="/auth/login"

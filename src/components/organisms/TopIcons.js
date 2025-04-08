@@ -85,7 +85,7 @@ const TopIcons = ({ isXs, isHomePage, useTheme }) => {
           logoText='startersaas.pro'
         />
         
-        {/* DragHandle IconButton on the right */}
+        {/* DragHandle IconButton on the right - Updated to match PortalDraghandleButton styling */}
         {showIconButton && (
           <IconButton 
             ref={dragHandleRef}
@@ -94,8 +94,23 @@ const TopIcons = ({ isXs, isHomePage, useTheme }) => {
             onClick={() => toggleDrawer()}
             id="draghandle"
             className="my-custom-class"
+            sx={{
+              backgroundColor: darkMode ? 'rgba(30, 30, 30, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+              transition: 'all 0.2s ease',
+              '&:hover': {
+                backgroundColor: darkMode ? 'rgba(40, 40, 40, 0.9)' : 'rgba(245, 245, 245, 0.9)',
+                boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)',
+              },
+              '&:active': {
+                transform: 'scale(0.95)',
+              }
+            }}
           >
-            <DragHandleIcon />
+            <DragHandleIcon sx={{
+              color: darkMode ? '#fff' : '#333',
+              fontSize: '1.5rem'
+            }} />
           </IconButton>
         )}
       </Toolbar>

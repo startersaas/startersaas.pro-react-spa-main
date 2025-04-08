@@ -1,5 +1,5 @@
 // api/mutations.jsx
-import { JWT_TOKEN, SIGNUP_WITH_ACTIVATE } from "config";
+import { JWT_TOKEN, SUPER_JWT_TOKEN, SIGNUP_WITH_ACTIVATE } from "config";
 import Axios from "libs/axios";
 import Storage from "libs/storage";
 
@@ -9,6 +9,14 @@ const Logout = async () => {
 
 const Login = async (data) => {
   const result = await Axios.base().post("/auth/login", data);
+  
+  // Check if user is superadmin
+  if (result.data.role === 'superadmin') {
+    Storage.setItem(SUPER_JWT_TOKEN, result.data.token);
+    return result; // Early return for superadmin - only sets super token
+  }
+  
+  // Only regular users reach this point
   Storage.setItem(JWT_TOKEN, result.data.token);
   return result;
 };
@@ -185,6 +193,22 @@ const RemoveTeamUser = async ({ teamId, userId }) => {
   return result;
 };
 
+// New Workspace mutations
+const CreateWorkspace = async (data) => {
+  const result = await Axios.authenticated().post("/workspaces", data);
+  return result;
+};
+
+const UpdateWorkspace = async (id, data) => {
+  const result = await Axios.authenticated().put(`/workspaces/${id}`, data);
+  return result;
+};
+
+const DeleteWorkspace = async (id) => {
+  const result = await Axios.authenticated().delete(`/workspaces/${id}`);
+  return result;
+};
+
 export {
   Logout,
   Login,
@@ -211,4 +235,7 @@ export {
   UpdateTeam,
   AddTeamUser,
   RemoveTeamUser,
+  CreateWorkspace,
+  UpdateWorkspace,
+  DeleteWorkspace,
 };

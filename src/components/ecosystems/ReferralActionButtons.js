@@ -109,7 +109,7 @@ const ReferralActionButtons = ({
             sx={{
               px: 3,
               py: 1.5,
-              backgroundColor: color,
+              backgroundColor: '#0fa0af',
               borderRadius: '12px',
               fontSize: buttonSize,
               fontWeight: 'bold',
@@ -119,6 +119,7 @@ const ReferralActionButtons = ({
               '&:hover': {
                 transform: 'translateY(-3px)',
                 boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)',
+                backgroundColor: '#0fa0af',
               },
             }}
           >
@@ -135,7 +136,7 @@ const ReferralActionButtons = ({
             sx={{
               px: 3,
               py: 1.5,
-              backgroundColor: color,
+              backgroundColor: '#c4880b',
               borderRadius: '12px',
               fontSize: buttonSize,
               fontWeight: 'bold',
@@ -145,6 +146,7 @@ const ReferralActionButtons = ({
               '&:hover': {
                 transform: 'translateY(-3px)',
                 boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)',
+                backgroundColor: '#c4880b',
               },
             }}
           >
@@ -160,7 +162,7 @@ const ReferralActionButtons = ({
           sx={{
             px: 3,
             py: 1.5,
-            backgroundColor: color,
+            backgroundColor: '#29b02a',
             borderRadius: '12px',
             fontSize: buttonSize,
             fontWeight: 'bold',
@@ -170,6 +172,7 @@ const ReferralActionButtons = ({
             '&:hover': {
               transform: 'translateY(-3px)',
               boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)',
+              backgroundColor: '#29b02a',
             },
           }}
         >
@@ -198,4 +201,3 @@ const ReferralActionButtons = ({
 };
 
 export default ReferralActionButtons;
-

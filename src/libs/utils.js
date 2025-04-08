@@ -1,5 +1,6 @@
 // libs/utils.jsx
-import { ACCOUNT_STATUSES } from "config";
+import { ACCOUNT_STATUSES, JWT_TOKEN, SUPER_JWT_TOKEN } from "config";
+import Storage from "libs/storage";
 
 const formatMoney = (locale, currency = "EUR", number) => {
   return new Intl.NumberFormat("de-DE", {
@@ -26,20 +27,6 @@ const isFreeTrial = (account) => {
   return account.subscriptionStatus === ACCOUNT_STATUSES.subscriptionTrial;
 };
 
-/*const formatErrors = (message) => {
-  let msg = "";
-  if (typeof message === "string" || message instanceof String) {
-    msg = message;
-  } else if (message.message) {
-    msg = message.message;
-  } else {
-    Object.keys(message).map((k) => {
-      msg += `${Object.values(message[k])} -- `;
-    });
-  }
-  return msg;
-};*/
-
 const formatErrors = (message) => {
   let msg = "";
   if (typeof message === "string" || message instanceof String) {
@@ -54,10 +41,22 @@ const formatErrors = (message) => {
   return msg;
 };
 
+// New method to get and return the regular token
+const getToken = () => {
+  return Storage.getItem(JWT_TOKEN);
+};
+
+// New method to get and return the super token
+const getSuperToken = () => {
+  return Storage.getItem(SUPER_JWT_TOKEN);
+};
+
 export {  
   formatMoney,  
   isAccountActive,  
   isFreeTrial,  
   hasFailedPayment,  
-  formatErrors,  
+  formatErrors,
+  getToken,
+  getSuperToken,
 };

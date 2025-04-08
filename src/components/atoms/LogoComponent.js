@@ -5,28 +5,26 @@ import HomeIcon from '@mui/icons-material/Home';
 import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-// Enhanced styled Typography with professional styling
-const StyledTypography = styled(Typography)(({ fontSize, darkMode }) => ({
+// Enhanced styled Typography with Monoton font and increased size
+const StyledTypography = styled(Typography)(({ fontSize }) => ({
   flex: '0 0 auto',
-  fontWeight: 900,
+  fontWeight: 400, // Monoton works better with normal weight
   fontSize,
-  fontFamily: 'Roboto Condensed, sans-serif',
+  fontFamily: '"Monoton Regular", "Roboto", sans-serif',
   position: 'relative',
   display: 'inline-block',
-  letterSpacing: '-0.5px',
+  letterSpacing: '0.05em',
   padding: 0,
   margin: 0,
   height: 'auto',
   lineHeight: 1.1,
-  borderRadius: 20,
   border: 'none',
   textTransform: 'none',
-  color: darkMode ? 'white' : 'black',
-  background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%)',
+  color: 'white', // Set to white regardless of dark mode
 }));
 
 // Wrapper with simplified styling
-const LogoWrapper = styled(Box)(({ darkMode }) => ({
+const LogoWrapper = styled(Box)(() => ({
   display: 'flex',
   alignItems: 'center',
   padding: '8px 0px',
@@ -60,47 +58,49 @@ const LogoComponent = ({
   const isLg = useMediaQuery('(min-width: 1280px) and (max-width: 1919px)');
   const isXl = useMediaQuery('(min-width: 1920px)');
 
-  // Responsive font size determination
+  // Responsive font size determination with 1.5x sizing
   const getFontSize = () => {
-    if (isXs) return 'calc(3vh + 1vw)';
-    if (isSm) return 'calc(5vh + 1vw)';
-    if (isMd) return 'calc(5.5vh + 1vw)';
-    if (isLg) return 'calc(6vh + 1vw)';
-    if (isXl) return 'calc(6.5vh + 1vw)';
-    return '4rem';
+    if (isXs) return 'calc(4.5vh + 1.5vw)';
+    if (isSm) return 'calc(7.5vh + 1.5vw)';
+    if (isMd) return 'calc(8.25vh + 1.5vw)';
+    if (isLg) return 'calc(9vh + 1.5vw)';
+    if (isXl) return 'calc(9.75vh + 1.5vw)';
+    return '6rem'; // 1.5x the original 4rem
   };
 
-  // Responsive icon size determination
+  // Responsive icon size determination with 1.5x sizing
   const getIconSize = () => {
-    if (isXs) return '2rem';
-    if (isSm) return '2.7rem';
-    if (isMd) return '3rem';
-    if (isLg) return '3.2rem';
-    if (isXl) return '3.5rem';
-    return '3rem';
+    if (isXs) return '3rem'; // 1.5x the original 2rem
+    if (isSm) return '4.05rem'; // 1.5x the original 2.7rem
+    if (isMd) return '4.5rem'; // 1.5x the original 3rem
+    if (isLg) return '4.8rem'; // 1.5x the original 3.2rem
+    if (isXl) return '5.25rem'; // 1.5x the original 3.5rem
+    return '4.5rem'; // 1.5x the original 3rem
   };
 
   const fontSize = getFontSize();
   const iconSize = getIconSize();
 
-  // Wrapper style variant for dark mode
-  const wrapperSx = {
-    ...(darkMode && {
-      background:
-        'linear-gradient(90deg, rgba(30, 30, 30, 0.4) 0%, rgba(30, 30, 30, 0.1) 100%)',
-    }),
-  };
-
   // Set CSS variable for primary color
   React.useEffect(() => {
     document.documentElement.style.setProperty(
       '--primary-main-rgb',
-      calculatePrimaryRgb('#1976d2')
+      calculatePrimaryRgb('#0fa0af') // Updated to use the teal color
     );
+    
+    // Dynamically load the Monoton font if not already present
+    const monotonFont = document.createElement('link');
+    monotonFont.rel = 'stylesheet';
+    monotonFont.href = 'https://fonts.googleapis.com/css2?family=Monoton:wght@400&display=swap';
+    document.head.appendChild(monotonFont);
+    
+    return () => {
+      document.head.removeChild(monotonFont);
+    };
   }, []);
 
   return (
-    <LogoWrapper className="logo-component" sx={wrapperSx} darkMode={darkMode}>
+    <LogoWrapper className="logo-component">
       <Link
         to={linkTo}
         style={{
@@ -110,9 +110,17 @@ const LogoComponent = ({
           cursor: 'pointer',
         }}
       >
-        <StyledTypography fontSize={fontSize} darkMode={darkMode}>
-          {logoText}
-        </StyledTypography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+          <StyledTypography fontSize={fontSize} sx={{ lineHeight: 0.8 }}>
+            Starter
+          </StyledTypography>
+          <StyledTypography fontSize={fontSize} sx={{ lineHeight: 0.8 }}>
+            Saas
+          </StyledTypography>
+          <StyledTypography fontSize={fontSize} sx={{ lineHeight: 0.8 }}>
+            .pro
+          </StyledTypography>
+        </Box>
       </Link>
       {showPlayIcon && (
         <IconButton
@@ -135,8 +143,8 @@ const LogoComponent = ({
           <HomeIcon
             sx={{
               fontSize: iconSize,
-              color: darkMode ? 'white' : 'primary.main',
-              filter: 'drop-shadow(0 0 3px rgba(var(--primary-main-rgb), 0.5))',
+              color: 'white', // Set to white regardless of dark mode
+              filter: 'drop-shadow(0 0 3px rgba(255, 255, 255, 0.3))', // Subtle white shadow
             }}
           />
         </IconButton>

@@ -144,7 +144,9 @@ pm2 start node \
 pm2 start node \
   --name backend \
   -- index.js
-
+pm2 start node \
+  --name server \
+  -- server-function-hub.js
 
  node test-seed-server-code.js
 Connecting to database...

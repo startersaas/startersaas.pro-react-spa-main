@@ -1,8 +1,10 @@
 // components/organisms/TopIconsPrivate.js
 import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { AppBar, Toolbar, Box, IconButton, Menu, MenuItem, useMediaQuery, useTheme } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Menu, MenuItem, useMediaQuery, useTheme, Button } from '@mui/material';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PortalDraghandleButton from 'components/atoms/PortalDraghandleButton';
 import LogoComponent from 'components/atoms/LogoComponent';
 import { useDarkMode } from 'contexts/DarkMode';
@@ -12,7 +14,6 @@ import { useMutation, useQueryClient } from "react-query";
 import { useForm } from "react-hook-form";
 import { Logout, UpdateMe } from "api/mutations";
 import { useAuth } from "contexts/AuthContext";
-import { HomeChip, LanguageChip, AccountChip } from 'components/atoms/NavChips';
 
 const TopIconsPrivate = ({ isXs, isHomePage, useTheme: propsUseTheme, user }) => {
   const navigate = useNavigate();
@@ -24,10 +25,25 @@ const TopIconsPrivate = ({ isXs, isHomePage, useTheme: propsUseTheme, user }) =>
   const queryClient = useQueryClient();
   const { refetch } = useAuth();
   const [userMenuAnchor, setUserMenuAnchor] = useState(null);
+  const [languageMenuAnchor, setLanguageMenuAnchor] = useState(null);
   
   const [showFixedButton, setShowFixedButton] = useState(false);
   const [showIconButton, setShowIconButton] = useState(true);
   const [buttonCoords, setButtonCoords] = useState({ right: 0 });
+  
+  // Define available languages
+  const languages = [
+    { code: 'en', label: 'English' },
+    { code: 'it', label: 'Italiano' },
+    // Add more languages as needed
+  ];
+  
+  // Get current language label
+  const getCurrentLanguageLabel = () => {
+    const currentLang = user?.language || i18n.language || 'en';
+    const langObj = languages.find(lang => lang.code === currentLang);
+    return langObj ? langObj.label.substring(0, 2).toUpperCase() : 'EN';
+  };
   
   const toolbarRef = useRef(null);
   const dragHandleRef = useRef(null);
@@ -102,67 +118,35 @@ const TopIconsPrivate = ({ isXs, isHomePage, useTheme: propsUseTheme, user }) =>
   };
 
   // Added from TopIconsPrivate - Language change handler
-  const handleLanguageChange = async (event) => {
-    const newLanguage = event.target.value;
+  const handleLanguageChange = async (languageCode) => {
+    if (!languageCode) return;
     
-    setValue('language', newLanguage);
-    
-    await mutation.mutateAsync({ language: newLanguage });
-    
-    await i18n.changeLanguage(newLanguage);
-    
-    queryClient.invalidateQueries(["Me"]);
+    try {
+      await mutation.mutateAsync({ language: languageCode });
+      await i18n.changeLanguage(languageCode);
+      queryClient.invalidateQueries(["Me"]);
+      setLanguageMenuAnchor(null);
+    } catch (error) {
+      console.error("Error updating language:", error);
+    }
   };
   
-  // Added from TopIconsPrivate - Render chips function
-  const renderChips = () => (
-    <>
-      <HomeChip darkMode={darkMode} />
-      {user && <LanguageChip user={user} handleLanguageChange={handleLanguageChange} darkMode={darkMode} />}
-      {user && <AccountChip setUserMenuAnchor={setUserMenuAnchor} darkMode={darkMode} />}
-    </>
-  );
-  
   return (
-    <AppBar position="static" elevation={0} color="transparent">
-      <Toolbar ref={toolbarRef} sx={{ 
-        display: 'flex', 
-        justifyContent: 'space-between',
-        padding: { xs: '0.5rem 1rem', md: '0.5rem 2rem' },
-        width: '100%'
-      }}>
-        {/* Logo Component on the left */}
-        <LogoComponent 
-          darkMode={darkMode} 
-          isHomePage={isHomePage} 
-          navigateOpen={() => navigateOpen('/')}
-          logoText='startersaas.pro'
-        />
-        
-        {/* Added Chips and IconButton in a Box container */}
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {isExtraSmall ? (
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                overflowX: 'auto',
-                whiteSpace: 'nowrap',
-                paddingX: 1,
-                '&::-webkit-scrollbar': { display: 'none' },
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-                maxWidth: 'calc(100vw - 200px)',
-              }}
-            >
-              {renderChips()}
-            </Box>
-          ) : (
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              {renderChips()}
-            </Box>
-          )}
+    <>
+      <AppBar position="static" elevation={0} color="transparent">
+        <Toolbar ref={toolbarRef} sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between',
+          padding: { xs: '0.5rem 1rem', md: '0.5rem 2rem' },
+          width: '100%'
+        }}>
+          {/* Logo Component on the left */}
+          <LogoComponent 
+            darkMode={darkMode} 
+            isHomePage={isHomePage} 
+            navigateOpen={() => navigateOpen('/')}
+            logoText='startersaas.pro'
+          />
           
           {/* DragHandle IconButton */}
           {showIconButton && (
@@ -173,14 +157,133 @@ const TopIconsPrivate = ({ isXs, isHomePage, useTheme: propsUseTheme, user }) =>
               onClick={() => toggleDrawer()}
               id="draghandle"
               className="my-custom-class"
+              sx={{
+                backgroundColor: darkMode ? 'rgba(30, 30, 30, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                transition: 'all 0.2s ease',
+                ml: 1,
+                '&:hover': {
+                  backgroundColor: darkMode ? 'rgba(40, 40, 40, 0.9)' : 'rgba(245, 245, 245, 0.9)',
+                  boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)',
+                },
+                '&:active': {
+                  transform: 'scale(0.95)',
+                }
+              }}
             >
-              <DragHandleIcon />
+              <DragHandleIcon sx={{
+                color: darkMode ? '#fff' : '#333',
+                fontSize: '1.5rem'
+              }} />
             </IconButton>
           )}
-        </Box>
-      </Toolbar>
+        </Toolbar>
+        
+        {/* Second Toolbar for buttons */}
+        <Toolbar sx={{ 
+          display: 'flex', 
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          padding: { xs: '0.5rem 1rem', md: '0.5rem 2rem' },
+          minHeight: 'auto',
+          width: '100%'
+        }}>
+          {/* Home Button */}
+          <Button
+            component={RouterLink}
+            to="/dashboard"
+            endIcon={<DragIndicatorIcon />}
+            size="small"
+            color="primary"
+            onClick={() => navigateOpen('/dashboard')}
+            sx={{
+              height: '28px',
+              fontSize: '0.7rem',
+              borderRadius: '4px',
+              mr: 0.5,
+              textTransform: 'none',
+              backgroundColor: darkMode ? 'rgba(60, 60, 60, 0.8)' : 'rgba(240, 240, 240, 0.9)',
+              '&:hover': {
+                backgroundColor: darkMode ? 'rgba(80, 80, 80, 0.9)' : 'rgba(220, 220, 220, 1)',
+              }
+            }}
+          >
+            Home
+          </Button>
+          
+          {/* Language Button */}
+          {user && (
+            <Button
+              endIcon={<DragIndicatorIcon />}
+              size="small"
+              color="primary"
+              onClick={(e) => setLanguageMenuAnchor(e.currentTarget)}
+              sx={{
+                height: '28px',
+                borderRadius: '4px',
+                mr: 0.5,
+                textTransform: 'none',
+                backgroundColor: darkMode ? 'rgba(60, 60, 60, 0.8)' : 'rgba(240, 240, 240, 0.9)',
+                padding: '0 12px',
+                minWidth: 'auto',
+                '&:hover': {
+                  backgroundColor: darkMode ? 'rgba(80, 80, 80, 0.9)' : 'rgba(220, 220, 220, 1)',
+                },
+                fontSize: '0.7rem',
+              }}
+            >
+              Language
+            </Button>
+          )}
+          
+          {/* Account Button */}
+          {user && (
+            <Button
+              endIcon={<DragIndicatorIcon />}
+              size="small"
+              color="primary"
+              onClick={(e) => setUserMenuAnchor(e.currentTarget)}
+              sx={{
+                height: '28px',
+                fontSize: '0.7rem',
+                borderRadius: '4px',
+                mr: 0.5,
+                textTransform: 'none',
+                backgroundColor: darkMode ? 'rgba(60, 60, 60, 0.8)' : 'rgba(240, 240, 240, 0.9)',
+                '&:hover': {
+                  backgroundColor: darkMode ? 'rgba(80, 80, 80, 0.9)' : 'rgba(220, 220, 220, 1)',
+                }
+              }}
+            >
+              Account
+            </Button>
+          )}
+        </Toolbar>
+      </AppBar>
       
-      {/* Added User Menu */}
+      {/* Language Menu */}
+      {user && (
+        <Menu 
+          anchorEl={languageMenuAnchor} 
+          open={Boolean(languageMenuAnchor)} 
+          onClose={() => setLanguageMenuAnchor(null)}
+          sx={{ backgroundColor: "initial" }}
+        >
+          {languages.map((lang) => (
+            <MenuItem 
+              key={lang.code}
+              onClick={() => handleLanguageChange(lang.code)}
+              selected={user?.language === lang.code}
+              sx={{ backgroundColor: "initial" }}
+            >
+              {lang.label}
+            </MenuItem>
+          ))}
+        </Menu>
+      )}
+      
+      {/* User Menu */}
       {user && (
         <Menu 
           anchorEl={userMenuAnchor} 
@@ -198,7 +301,7 @@ const TopIconsPrivate = ({ isXs, isHomePage, useTheme: propsUseTheme, user }) =>
           >
             {t("privateLayout.manageUser")}
           </MenuItem>
-          {user.role === "admin" && (
+          {(user.role === "admin" || user.role === "superadmin") && (
             <>
               <MenuItem 
                 component={RouterLink} 
@@ -240,7 +343,7 @@ const TopIconsPrivate = ({ isXs, isHomePage, useTheme: propsUseTheme, user }) =>
           }}
         />
       )}
-    </AppBar>
+    </>
   );
 };
 

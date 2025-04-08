@@ -53,6 +53,32 @@ const Team = async (id) => {
   return result;
 };
 
+// New Workspace queries
+const Workspaces = async () => {
+  const result = await Axios.authenticated().get("/workspaces");
+  return result;
+};
+
+const Workspace = async (id) => {
+  const result = await Axios.authenticated().get(`/workspaces/${id}`);
+  return result;
+};
+
+const WorkspaceTablesList = async (id) => {
+  const result = await Axios.authenticated().get(`/workspaces/${id}/db/tables`);
+  return result;
+};
+
+const WorkspaceTableData = async (id, limit) => {
+  const result = await Axios.authenticated().get(`/workspaces/${id}/db/data${limit ? `?limit=${limit}` : ''}`);
+  return result;
+};
+
+const TestDatabaseConnection = async (id) => {
+  const result = await Axios.authenticated().get(`/workspaces/${id}/db/test`);
+  return result;
+};
+
 export {
   Me,
   Account,
@@ -64,4 +90,9 @@ export {
   User,
   Teams,
   Team,
+  Workspaces,
+  Workspace,
+  WorkspaceTablesList,
+  WorkspaceTableData,
+  TestDatabaseConnection,
 };

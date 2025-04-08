@@ -9,33 +9,43 @@ export const RolesProvider = ({ children }) => {
 
   useEffect(() => {
     if (location.pathname === "/DashboardTest") {
-      setAllowedRoles(["admin", "user"]);
+      setAllowedRoles(["admin", "user", "superadmin"]);
     } else if (location.pathname === "/teams") {
-      setAllowedRoles(["admin", "user"]);
+      setAllowedRoles(["admin", "user", "superadmin"]);
     } else if (location.pathname === "/teams/:teamId") {
-      setAllowedRoles(["admin"]);
+      setAllowedRoles(["admin", "superadmin"]);
     } else if (location.pathname === "/user-teams") {
-      setAllowedRoles(["user"]);
+      setAllowedRoles(["user", "superadmin"]);
     } else if (location.pathname === "/card/add") {
-      setAllowedRoles(["admin"]);
+      setAllowedRoles(["admin", "superadmin"]);
     } else if (location.pathname === "/plan/:planId/subscribe") {
-      setAllowedRoles(["admin"]);
+      setAllowedRoles(["admin", "superadmin"]);
     } else if (location.pathname === "/plan") {
-      setAllowedRoles(["admin"]);
+      setAllowedRoles(["admin", "superadmin"]);
     } else if (location.pathname === "/user/edit") {
-      setAllowedRoles(["admin", "user"]);
+      setAllowedRoles(["admin", "user", "superadmin"]);
     } else if (location.pathname === "/account/edit") {
-      setAllowedRoles(["admin"]);
+      setAllowedRoles(["admin", "superadmin"]);
     } else if (location.pathname === "/users") {
-      setAllowedRoles(["admin"]);
+      setAllowedRoles(["admin", "superadmin"]);
     } else if (location.pathname === "/create-user") {
-      setAllowedRoles(["admin"]);
+      setAllowedRoles(["admin", "superadmin"]);
     } else if (location.pathname === "/edit-user/:userId") {
-      setAllowedRoles(["admin"]);
+      setAllowedRoles(["admin", "superadmin"]);
     } else if (location.pathname === "/user/:userId") {
-      setAllowedRoles(["admin"]);
+      setAllowedRoles(["admin", "superadmin"]);
     } else if (location.pathname === "/subscribers") {
-      setAllowedRoles(["admin"]);
+      setAllowedRoles(["admin", "superadmin"]);
+    } 
+    // Workspace routes - only superadmin for now
+    else if (location.pathname === "/workspaces") {
+      setAllowedRoles(["superadmin"]);
+    } else if (location.pathname === "/workspaces/create") {
+      setAllowedRoles(["superadmin"]);
+    } else if (location.pathname === "/workspaces/edit/:id") {
+      setAllowedRoles(["superadmin"]);
+    } else if (location.pathname === "/workspaces/view/:id") {
+      setAllowedRoles(["superadmin"]);
     }
   }, [location.pathname]);
 

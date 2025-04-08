@@ -12,7 +12,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Button
+  Button,
+  Skeleton
 } from '@mui/material';
 import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 import PaymentsIcon from '@mui/icons-material/Payments';
@@ -38,8 +39,8 @@ import AutorenewIcon from '@mui/icons-material/Autorenew';
           />
  */
 const SubscriptionInfoDesktop = ({
-  plan,
-  subscription,
+  plan = {}, // Default to empty object to prevent undefined errors
+  subscription = {}, // Default to empty object
   onCancelSubscription,
   formatMoney
 }) => {
@@ -47,6 +48,7 @@ const SubscriptionInfoDesktop = ({
 
   // Helper function to format Unix timestamp to date
   const formatDate = (unixTimestamp) => {
+    if (!unixTimestamp) return 'N/A';
     return moment.unix(unixTimestamp).format("DD/MM/YYYY");
   };
 
@@ -88,7 +90,7 @@ const SubscriptionInfoDesktop = ({
                     <TableCell sx={{ textAlign: 'center', pb: 0 }}>
                       <AttachMoneyIcon color="action" sx={{ fontSize: 20 }} />
                     </TableCell>
-                    {subscription.canceled_at ? (
+                    {subscription?.canceled_at ? (
                       <>
                         <TableCell sx={{ textAlign: 'center', pb: 0 }}>
                           <CancelIcon color="error" sx={{ fontSize: 20 }} />
@@ -112,7 +114,7 @@ const SubscriptionInfoDesktop = ({
                     <TableCell sx={{ pt: 0 }}>
                       {t("dashboardPage.price")}
                     </TableCell>
-                    {subscription.canceled_at ? (
+                    {subscription?.canceled_at ? (
                       <>
                         <TableCell sx={{ pt: 0 }}>
                           {t("dashboardPage.canceledAt")}
@@ -131,14 +133,19 @@ const SubscriptionInfoDesktop = ({
                 <TableBody>
                   <TableRow>
                     <TableCell>
-                      <Typography fontWeight="medium">{plan.title}</Typography>
+                      <Typography fontWeight="medium">
+                        {plan?.title || t("dashboardPage.noPlanSelected")}
+                      </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography fontWeight="medium">
-                        {formatMoney("it", plan.currency, plan.price)}
+                        {plan?.price !== undefined && plan?.currency ? 
+                          formatMoney("it", plan.currency, plan.price) : 
+                          "—"
+                        }
                       </Typography>
                     </TableCell>
-                    {subscription.canceled_at ? (
+                    {subscription?.canceled_at ? (
                       <>
                         <TableCell>
                           <Typography>
@@ -154,14 +161,14 @@ const SubscriptionInfoDesktop = ({
                     ) : (
                       <TableCell>
                         <Typography>
-                          {formatDate(subscription.current_period_end)}
+                          {formatDate(subscription?.current_period_end)}
                         </Typography>
                       </TableCell>
                     )}
                   </TableRow>
                   {/* Action Buttons Row */}
                   <TableRow>
-                    <TableCell colSpan={subscription.canceled_at ? 4 : 3} sx={{ pt: 3 }}>
+                    <TableCell colSpan={subscription?.canceled_at ? 4 : 3} sx={{ pt: 3 }}>
                       <Table size="small" sx={{ '& td': { border: 0, p: 1 } }}>
                         <TableBody>
                           <TableRow>
@@ -175,13 +182,14 @@ const SubscriptionInfoDesktop = ({
                                 {t("dashboardPage.changePlan")}
                               </Button>
                             </TableCell>
-                            {!subscription.canceled_at && (
+                            {subscription && !subscription.canceled_at && (
                               <TableCell sx={{ width: '50%' }}>
                                 <Button 
                                   onClick={() => onCancelSubscription(subscription.id)} 
                                   fullWidth
                                   variant="outlined"
                                   color="error"
+                                  disabled={!subscription.id}
                                 >
                                   {t("dashboardPage.deleteSubscription")}
                                 </Button>

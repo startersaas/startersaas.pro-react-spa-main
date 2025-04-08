@@ -14,7 +14,7 @@ const DashboardSwitcher = () => {
     return null;
   }
 
-  if (user.role === "admin") {
+  if (user.role === "admin" || user.role === "superadmin") {
     return isMobile ? <DashboardPage user={user} /> : <DashboardPageDesktop user={user} />;
   } else {
     return isMobile ? <UserDashboardPage user={user} /> : <UserDashboardPageDesktop user={user} />;

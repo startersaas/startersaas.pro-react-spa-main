@@ -25,6 +25,10 @@ import EditUser from 'pages/Users/EditUser';
 import EditUsersPage from 'pages/Users/EditUsersPage';
 import IndexUsersPage from 'pages/Users/IndexUsersPage';
 import SubscriberPage from 'pages/Users/SubscriberPage';
+import IndexWorkspacesPage from 'pages/Workspaces/IndexWorkspacesPage';
+import CreateWorkspacePage from 'pages/Workspaces/CreateWorkspacePage';
+import EditWorkspacePage from 'pages/Workspaces/EditWorkspacePage';
+import ViewWorkspacePage from 'pages/Workspaces/ViewWorkspacePage';
 import { PrivateRoute } from 'routes/PrivateRoute';
 import { PrivateActiveRoute } from 'routes/PrivateActiveRoute';
 import { OnlyPublicRoute } from 'routes/OnlyPublicRoute';
@@ -37,7 +41,7 @@ import { ScrolledProvider } from 'contexts/ScrolledContext';
 import { DashboardDrawerProtectedProvider } from 'contexts/DashboardDrawerProtectedContext';
 import { DashboardDrawerProvider } from 'contexts/DashboardDrawerContext';
 import { DrawerProvider } from 'contexts/DrawerContext';
-import { TvMode } from 'contexts/TvMode';
+import { RetroTvMode } from 'contexts/RetroTvMode';
 import { WorkspaceProvider } from 'contexts/WorkspaceContext';
 import { AccordionProvider } from 'contexts/AccordionContext';
 import { AuthProvider } from 'contexts/AuthContext';
@@ -60,7 +64,7 @@ const queryClient = new QueryClient({
 const ApplicationRouter = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <TvMode>
+      <RetroTvMode>
         <ChatsProvider>
           <WorkspaceProvider>
             <AuthProvider>
@@ -388,6 +392,62 @@ const ApplicationRouter = () => {
                                       </RolesProvider>
                                     }
                                   />
+                                  <Route
+                                    path="/workspaces"
+                                    element={
+                                      <RolesProvider>
+                                        <PlanTypeProvider>
+                                          <PrivateLayout>
+                                            <SnackbarOpen>
+                                              <PrivateRoute element={IndexWorkspacesPage} />
+                                            </SnackbarOpen>
+                                          </PrivateLayout>
+                                        </PlanTypeProvider>
+                                      </RolesProvider>
+                                    }
+                                  />
+                                  <Route
+                                    path="/workspaces/create"
+                                    element={
+                                      <RolesProvider>
+                                        <PlanTypeProvider>
+                                          <PrivateLayout>
+                                            <SnackbarOpen>
+                                              <PrivateRoute element={CreateWorkspacePage} />
+                                            </SnackbarOpen>
+                                          </PrivateLayout>
+                                        </PlanTypeProvider>
+                                      </RolesProvider>
+                                    }
+                                  />
+                                  <Route
+                                    path="/workspaces/edit/:id"
+                                    element={
+                                      <RolesProvider>
+                                        <PlanTypeProvider>
+                                          <PrivateLayout>
+                                            <SnackbarOpen>
+                                              <PrivateRoute element={EditWorkspacePage} />
+                                            </SnackbarOpen>
+                                          </PrivateLayout>
+                                        </PlanTypeProvider>
+                                      </RolesProvider>
+                                    }
+                                  />
+                                  <Route
+                                    path="/workspaces/view/:id"
+                                    element={
+                                      <RolesProvider>
+                                        <PlanTypeProvider>
+                                          <PrivateLayout>
+                                            <SnackbarOpen>
+                                              <PrivateRoute element={ViewWorkspacePage} />
+                                            </SnackbarOpen>
+                                          </PrivateLayout>
+                                        </PlanTypeProvider>
+                                      </RolesProvider>
+                                    }
+                                  />
                                 </Routes>
                               </Router>
                             </DarkMode>
@@ -401,7 +461,7 @@ const ApplicationRouter = () => {
             </AuthProvider>
           </WorkspaceProvider>
         </ChatsProvider>
-      </TvMode>
+      </RetroTvMode>
     </QueryClientProvider>
   );
 };
